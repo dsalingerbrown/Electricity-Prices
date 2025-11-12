@@ -1,0 +1,43 @@
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+*.egg-info/
+.env
+.venv/
+venv/
+.envrc
+
+# Jupyter
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# macOS System files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Logs / Temp
+*.log
+*.tmp
+*.swp
+
+# Build / Dist
+build/
+dist/
+*.egg-info/
+
+# Byte-compiled / optimized / DLL files
+*.so
+
+# Virtual environment folders
+env/
+ENV/
+
+
+# Data
+Data/

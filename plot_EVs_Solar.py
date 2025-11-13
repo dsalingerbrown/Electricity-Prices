@@ -1,15 +1,18 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import json
+import numpy as np
 
 # --- TOGGLES ---
-NORMALIZE_BY_DETACHED = True       # normalize by single-family detached homes
-NORMALIZE_BY_HOUSEHOLDS = False    # normalize by total households instead (old method)
+NORMALIZE_BY_DETACHED = True        # normalize by single-family detached homes
+NORMALIZE_BY_HOUSEHOLDS = False     # normalize by total households instead (old method)
+RESTRICT_TO_COASTAL = True          # restrict to coastal counties only
 
 # === Step 1: Load datasets ===
 ev_path = '/Users/dannysalingerbrown/Desktop/Electricity_Prices_Project/ev_share_long.csv'
 pv_path = '/Users/dannysalingerbrown/Desktop/Electricity_Prices_Project/Aggregated_Data_Solar/pv_capacity_ac_by_zip_up_to_2025_agg.csv'
-dwellings_path = '/Users/dannysalingerbrown/Desktop/Electricity_Prices_Project/DwellingData/2023Dwellings.csv'
+dwellings_path = '/Users/dannysalingerbrown/Desktop/Electricity_Prices_Project/Data/DwellingData/2023Dwellings.csv'
+crosswalk_path = '/Users/dannysalingerbrown/Desktop/Electricity_Prices_Project/Data/ZIP_COUNTY_062025.csv'  # <— update this path
 
 # --- Load EV data (now using EV_PHEV_Total) ---
 ev_df = pd.read_csv(ev_path)
@@ -32,7 +35,7 @@ dwellings_df['num_detached'] = pd.to_numeric(dwellings_df['B25024_002E'], errors
 
 # --- Load Household Data Only If Needed ---
 if NORMALIZE_BY_HOUSEHOLDS:
-    households_path = '/Users/dannysalingerbrown/Desktop/Electricity_Prices_Project/Households.json'
+    households_path = '/Users/dannysalingerbrown/Desktop/Electricity_Prices_Project/Data/Households.json'
     with open(households_path, 'r') as f:
         data = json.load(f)
     headers = data[0]
@@ -44,6 +47,39 @@ if NORMALIZE_BY_HOUSEHOLDS:
     }, inplace=True)
     households_df['Zip Code'] = households_df['Zip Code'].astype(str).str.zfill(5)
     households_df['num_households'] = pd.to_numeric(households_df['num_households'], errors='coerce')
+
+# --- Load ZIP-to-County Crosswalk (for coastal filtering) ---
+if RESTRICT_TO_COASTAL:
+    crosswalk = pd.read_csv(crosswalk_path, dtype={'ZIP': str})
+    crosswalk['ZIP'] = crosswalk['ZIP'].str.zfill(5)
+
+    # FIPS to County Name lookup (California coastal only)
+    county_fips_to_name = {
+        # '06015': "Del Norte County",
+        # '06023': "Humboldt County",
+        # '06045': "Mendocino County",
+        # '06097': "Sonoma County",
+        '06041': "Marin County",
+        '06075': "San Francisco County",
+        '06081': "San Mateo County",
+        '06013': "Contra Costa County",
+        '06085': "Santa Clara County",
+        # '06087': "Santa Cruz County",
+        # '06053': "Monterey County",
+        # '06079': "San Luis Obispo County",
+        '06083': "Santa Barbara County",
+        # '06111': "Ventura County",
+        '06037': "Los Angeles County",
+        '06059': "Orange County",
+        '06073': "San Diego County"
+    }
+
+    # Match by county FIPS codes (the HUD crosswalk uses numeric county codes)
+    coastal_fips = list(county_fips_to_name.keys())
+    crosswalk['COUNTY'] = crosswalk['COUNTY'].astype(str).str.zfill(5)
+    coastal_zips = crosswalk.loc[crosswalk['COUNTY'].isin(coastal_fips), 'ZIP'].unique().tolist()
+
+    print(f"✅ Identified {len(coastal_zips)} coastal ZIP codes.")
 
 # === Step 2: Filter EV data to 2024 ===
 ev_2024 = ev_df[ev_df['Year'] == 2024].copy()
@@ -63,6 +99,13 @@ merged = merged.merge(
     on='Zip Code',
     how='inner'
 )
+
+# --- Apply Coastal Filter if Enabled ---
+if RESTRICT_TO_COASTAL:
+    before = len(merged)
+    merged = merged[merged['Zip Code'].isin(coastal_zips)].copy()
+    after = len(merged)
+    print(f"🌊 Restricted to coastal ZIPs: {after:,} retained (from {before:,})")
 
 # === Step 4b: Filter ZIPs with top 75% detached homes ===
 threshold = merged['num_detached'].quantile(0.25)
@@ -99,9 +142,7 @@ print("\nPreview of filtered dataset:")
 print(filtered[['Zip Code', 'EV_PHEV_Total', 'num_detached', 'evs_plot',
                 'pv_capacity_residential_ac', 'pv_count_residential_ac', 'pv_plot']].head())
 
-import numpy as np
-USE_LOG = False
-
+USE_LOG = True
 if USE_LOG:
     filtered['evs_plot'] = np.log(filtered['evs_plot'])
     filtered['pv_plot'] = np.log(filtered['pv_plot'])

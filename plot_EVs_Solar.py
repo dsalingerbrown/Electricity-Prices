@@ -63,6 +63,7 @@ if RESTRICT_TO_COASTAL:
         '06075': "San Francisco County",
         '06081': "San Mateo County",
         '06013': "Contra Costa County",
+        '06001': "Alameda County",
         '06085': "Santa Clara County",
         # '06087': "Santa Cruz County",
         # '06053': "Monterey County",
@@ -142,7 +143,7 @@ print("\nPreview of filtered dataset:")
 print(filtered[['Zip Code', 'EV_PHEV_Total', 'num_detached', 'evs_plot',
                 'pv_capacity_residential_ac', 'pv_count_residential_ac', 'pv_plot']].head())
 
-USE_LOG = True
+USE_LOG = False
 if USE_LOG:
     filtered['evs_plot'] = np.log(filtered['evs_plot'])
     filtered['pv_plot'] = np.log(filtered['pv_plot'])
@@ -177,7 +178,7 @@ plt.show()
 plt.figure(figsize=(8,6))
 plt.scatter(filtered['evs_plot'], filtered['pv_count_plot'], alpha=0.6, edgecolor='black')
 plt.xlabel(ev_label)
-plt.ylabel('PV Install Count' + (" per Detached Home" if NORMALIZE_BY_DETACHED else ""))
+plt.ylabel(pv_label)
 plt.title('EV + PHEV Adoption vs PV Installation Count by ZIP' + title_suffix)
 plt.grid(True)
 plt.tight_layout()

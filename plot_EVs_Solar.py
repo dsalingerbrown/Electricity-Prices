@@ -12,7 +12,7 @@ RESTRICT_TO_COASTAL = True          # restrict to coastal counties only
 ev_path = '/Users/dannysalingerbrown/Desktop/Electricity_Prices_Project/ev_share_long.csv'
 pv_path = '/Users/dannysalingerbrown/Desktop/Electricity_Prices_Project/Aggregated_Data_Solar/pv_capacity_ac_by_zip_up_to_2025_agg.csv'
 dwellings_path = '/Users/dannysalingerbrown/Desktop/Electricity_Prices_Project/Data/DwellingData/2023Dwellings.csv'
-crosswalk_path = '/Users/dannysalingerbrown/Desktop/Electricity_Prices_Project/Data/ZIP_COUNTY_062025.csv'  # <— update this path
+crosswalk_path = '/Users/dannysalingerbrown/Desktop/Electricity_Prices_Project/Data/ZIP_COUNTY_062025.csv'  
 
 # --- Load EV data (now using EV_PHEV_Total) ---
 ev_df = pd.read_csv(ev_path)

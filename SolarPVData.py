@@ -6,8 +6,8 @@ import geopandas as gpd
 import matplotlib.pyplot as plt
 
 # ---------------- USER CONFIG ----------------
-CSV_FOLDER = r'/Users/dannysalingerbrown/Desktop/Electricity_Prices_Project/Interconnected_Project_Sites_2025-08-31 (2)'
-ZIP_SHP_PATH = r'/Users/dannysalingerbrown/Desktop/Electricity_Prices_Project/tl_2025_us_zcta520/tl_2025_us_zcta520.shp'
+CSV_FOLDER = r'/Users/dannysalingerbrown/Desktop/Electricity_Prices_Project/Data/Interconnected_Project_Sites_2025-08-31 (2)'
+ZIP_SHP_PATH = r'/Users/dannysalingerbrown/Desktop/Electricity_Prices_Project/Data/tl_2025_us_zcta520/tl_2025_us_zcta520.shp'
 COUNTY_ZIP_CROSSWALK = None  # optional fallback CSV path, or None
 # ------------------------------------------------
 

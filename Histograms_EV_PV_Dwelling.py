@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 
 ev_path = '/Users/dannysalingerbrown/Desktop/Electricity_Prices_Project/ev_share_long.csv'
 pv_path = '/Users/dannysalingerbrown/Desktop/Electricity_Prices_Project/Aggregated_Data_Solar/pv_capacity_ac_by_zip_up_to_2025_agg.csv'
-dwellings_path = '/Users/dannysalingerbrown/Desktop/Electricity_Prices_Project/DwellingData/2023Dwellings.csv'
+dwellings_path = '/Users/dannysalingerbrown/Desktop/Electricity_Prices_Project/Data/DwellingData/2023Dwellings.csv'
 
 # Load EV data
 ev_df = pd.read_csv(ev_path)
